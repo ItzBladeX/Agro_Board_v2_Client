@@ -2,11 +2,12 @@ import streamlit as st
 # Components
 from components.navbar import render_navbar
 # Pages
-from pages.about import about_page
-from pages.crop import crop_page
-from pages.inventory import inventory_page
-from pages.liveStock import livestock_page
-from pages.home import home_page
+
+from app.pages.about import about_page
+from app.pages.crop import crop_page
+from app.pages.inventory import inventory_page
+from app.pages.liveStock import livestock_page
+from app.pages.home import home_page
 
 # import weather
 # import client_app.app.functions as func
