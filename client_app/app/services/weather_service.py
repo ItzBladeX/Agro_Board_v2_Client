@@ -1,14 +1,9 @@
 import geocoder, requests
 import streamlit as st
 
-@st.cache_data
-def get_weather():
-    raw = fetch_weather()
-    if raw is None:
-        return {"temperature" : None,"wind_speed" : None,"rainfall" : None,"city" : None,}
-    return perse_weather(raw)
 
-def fetch_weather(arg):
+
+def fetch_weather():
     try:
         lat, lon = geocoder.ip('me').latlng
         # url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
@@ -31,7 +26,12 @@ def perse_weather(data):
         "city" : geocoder.ip("me")
         }
     
-
+@st.cache_data
+def get_weather():
+    raw = fetch_weather()
+    if raw is None:
+        return {"temperature" : None,"windspeed" : None,"rainfall" : None,"city" : None,}
+    return perse_weather(raw)
 
 
  # weather = data["current_weather"]

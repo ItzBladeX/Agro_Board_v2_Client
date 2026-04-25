@@ -1,6 +1,6 @@
 import streamlit as st
-from app.components.weather_matrix import render_weather_matrix
-from app.services.weather_service import get_weather
+from components.weather_matrix import render_weather_matrix
+from services.weather_service import get_weather
 def home_page():
     with st.divider():
         data = get_weather()
