@@ -35,9 +35,11 @@ def navbar():
     width = st.session_state.window_width
     current_page = st.session_state.page
     selected = render_navbar(current_page, width, PAGES)
-    if selected is not current_page:
-        st.session_state.page = selected 
+    if selected != current_page:
+        st.session_state.page = selected
+        st.rerun()
     PAGES[st.session_state.page]()
+
 
 def login():
     pass
