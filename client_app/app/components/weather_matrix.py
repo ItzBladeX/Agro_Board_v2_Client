@@ -1,5 +1,5 @@
 import streamlit as st
-from components.ui.text import centered_title
+from .ui.text import centered_matrix
 
 
 def render_weather_matrix(weather):
@@ -7,7 +7,8 @@ def render_weather_matrix(weather):
     windspeed = "-" if weather is None else f"💨 {weather["windspeed"]} km/h" 
     rainfall = "-" if weather is None else f"🌧️ {weather["rainfall"]} mm"
     station = "-" if weather is None else  f"🏠 {weather["city"]}"
-    centered_title("Today's Weather Report")
+    st.title("Today's Weather Report",text_alignment="center")
+    centered_matrix()
     matric_1, matric_2, matric_3, matric_4 = st.columns(4)
     with matric_1:
         st.metric(label ="Temperature", value = temperature, border=True)

@@ -36,8 +36,11 @@ def navbar():
 def login():
     pass
 def main():
+    if "login" not in st.session_state:
+        auth_view()
     # session_states()
-    navbar()
+    else:
+        navbar()
 
 main()
     
