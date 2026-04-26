@@ -34,6 +34,7 @@ def sighup():
     
     st.title("Register",text_alignment="center")
     st.divider()
+
     with st.form("register_form"):
         name = st.text_input(label="Full Name", key="sighup name")
         passwd = st.text_input(label="Password", type="password", key="register_password")
@@ -42,6 +43,7 @@ def sighup():
             age = st.number_input(label="Age",step=1)
             land_area = st.number_input(label="Land area", step=0.1)
         submit = st.form_submit_button("Sign Up", key="register_button", width="stretch", type="primary")
+    
     if submit:
         if name == None:
             st.error("Please Provide your Full Name")
@@ -53,6 +55,9 @@ def sighup():
             status = signup_user(name = name, passwd = passwd, age = age, land_area=land_area)
             if status == True:
                 st.success("Successfully Signed Up")
+                time.sleep(2)
+                set_mode("login")
+                st.rerun()
             elif status == False:
                 st.error("Something Went Wrong")
 
@@ -72,9 +77,12 @@ def login():
             st.error("Please provide a password")
 
         if all([name, passwd]):
-            status = login_user(name=name, passwd=passwd)
-            if status == True:
+            user = login_user(name=name, passwd=passwd)
+            if user:
                 st.success("Successful")
+                time.sleep(2)
+                st.session_state.user = user.id
+                st.rerun()
             else:
                 st.error("Invalud Username or Password")
 

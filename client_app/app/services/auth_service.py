@@ -2,6 +2,7 @@ from database import engine
 from models import User
 from sqlmodel import Session, select
 
+
 def signup_user(name, passwd, age, land_area):
     with Session(engine) as session:
         try:
@@ -16,12 +17,9 @@ def signup_user(name, passwd, age, land_area):
 
 def login_user(name, passwd):
     with Session(engine) as session:
-        
-        result = session.exec(select(User).where(name == User.name, passwd == User.passwd))
-        user = result.first()
-        if user is None:
-            return False
-        return True
+        statement = select(User).where(User.name == name, User.passwd == passwd)
+        user = session.exec(statement).first()
+        return user
 
 
 
