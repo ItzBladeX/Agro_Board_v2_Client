@@ -4,7 +4,7 @@ import pandas as pd
 # import client_app.app.functions as func
 from streamlit_javascript import st_javascript
 import time
-def livestock_page():
+def livestock_view():
     pass
     # database = "livestock_database"
     # st.set_page_config(layout="wide")

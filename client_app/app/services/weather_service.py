@@ -4,7 +4,7 @@ import streamlit as st
 def get_weather():
     raw = fetch_weather()
     if raw is None:
-        return {"temperature" : "-","windspeed" : "-","rainfall" : "-","city" : "-"}
+        return None
     return perse_weather(raw)
 
 def fetch_weather():

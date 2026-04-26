@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#2fa342ff"             # Anthropic primary accent (soft terra cotta)
+backgroundColor = "#faf9f5"          # Very light, warm neutral base
+secondaryBackgroundColor = "#e8e6dc" # Subtle off‑white for cards/sidebar
+textColor = "#013014ff"                # Rich dark text for readability
+font = "sans serif"

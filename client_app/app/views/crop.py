@@ -4,7 +4,7 @@ import pandas as pd
 # import client_app.app.functions as func
 import time
 from streamlit_javascript import st_javascript
-def crop_page():
+def crop_view():
     pass
     # st.set_page_config(layout="wide")
     # st.logo("logo.png", size='large')

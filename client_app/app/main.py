@@ -1,13 +1,9 @@
 import streamlit as st
 # Components
-from components.navbar import render_navbar
+from components import render_navbar
 # Pages
 
-from pages.About import about_page
-from pages.Crop import crop_page
-from pages.Inventory import inventory_page
-from pages.LiveStock import livestock_page
-from pages.home import home_page
+from views import *
 
 # import weather
 # import client_app.app.functions as func
@@ -20,11 +16,11 @@ st.set_page_config(page_title="AGRO-BOARD", layout="wide", )
 # st.logo("logo.png", size='large')
 
 PAGES = {
-    "Home": home_page,
-    "Crop": crop_page,
-    "Livestock": livestock_page,
-    "Inventory": inventory_page,
-    "About": about_page,
+    "Home": home_view,
+    "Crop": crop_view,
+    "Livestock": livestock_view,
+    "Inventory": inventory_view,
+    "About": about_view,
     }
 
 if "page" not in st.session_state:
@@ -33,12 +29,7 @@ if "window_width" not in st.session_state:
     st.session_state.window_width = st_javascript("window.innerWidth", key="main_width") 
 
 def navbar():  
-    width = st.session_state.window_width
-    current_page = st.session_state.page
-    selected = render_navbar(current_page, width, PAGES)
-    if selected != current_page:
-        st.session_state.page = selected
-        st.rerun()
+    render_navbar(PAGES)
     PAGES[st.session_state.page]()
 
 
@@ -47,6 +38,7 @@ def login():
 def main():
     # session_states()
     navbar()
+
 main()
     
 

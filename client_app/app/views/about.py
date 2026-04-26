@@ -2,7 +2,7 @@ import streamlit as st
 from streamlit_javascript import st_javascript
 # import client_app.app.functions as func
 import time
-def about_page():
+def about_view():
     pass
     # st.set_page_config(page_title="AGRO-BOARD", layout="wide", )
     # st.logo("logo.png")

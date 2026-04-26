@@ -4,7 +4,7 @@ import pandas as pd
 # import client_app.app.functions as func
 from streamlit_javascript import st_javascript
 import time
-def inventory_page():
+def inventory_view():
     pass
     # database = "inventory_database"
 
