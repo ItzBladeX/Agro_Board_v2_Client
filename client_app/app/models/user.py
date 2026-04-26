@@ -5,3 +5,4 @@ class User(SQLModel, table = True):
     name: str 
     age: int
     land_area : float | None = Field(default= None)
+    passwd : str

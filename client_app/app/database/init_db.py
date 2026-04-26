@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel
-from app.database.db import engine
-from app.models import *
+from .db import engine
+from models import *
 
 def intit_db():
     SQLModel.metadata.create_all(engine)
