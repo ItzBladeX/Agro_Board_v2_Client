@@ -1,10 +1,10 @@
-from database import engine
-from models import User
-from sqlmodel import Session, select
+from app.database import get_session
+from app.models import User
+from sqlmodel import select
 
 
 def signup_user(name, passwd, age, land_area):
-    with Session(engine) as session:
+    with get_session() as session:
         try:
             user = User(name=name, passwd=passwd, age=age, land_area=land_area)
             session.add(user)
@@ -16,7 +16,7 @@ def signup_user(name, passwd, age, land_area):
             return False
 
 def login_user(name, passwd):
-    with Session(engine) as session:
+    with get_session() as session:
         statement = select(User).where(User.name == name, User.passwd == passwd)
         user = session.exec(statement).first()
         return user

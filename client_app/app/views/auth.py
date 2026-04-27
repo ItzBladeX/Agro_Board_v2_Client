@@ -1,12 +1,11 @@
 import streamlit as st
-from services import signup_user
-from services import login_user
+from app.services import signup_user
+from app.services import login_user
 import time
 
-if "mode" not in st.session_state:
-    st.session_state.mode = "login"
-
 def auth_view():
+    if "mode" not in st.session_state:
+        st.session_state.mode = "login"
     
     left, center, right = st.columns(3)
     with center:

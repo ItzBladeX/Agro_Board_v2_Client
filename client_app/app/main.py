@@ -1,10 +1,13 @@
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import streamlit as st
 # Components
-from components import render_navbar
-from services import get_user_by_id
+from app.components import render_navbar
+from app.services import get_user_by_id
 # Pages
 
-from views import *
+from app.views import *
 
 # import weather
 # import client_app.app.functions as func
@@ -22,6 +25,7 @@ if "window_width" not in st.session_state:
     st.session_state.window_width = st_javascript("window.innerWidth", key="main_width") 
 if "user" not in st.session_state:
     st.session_state.user = None
+
 PAGES = {
     "Home": home_view,
     "Crop": crop_view,
@@ -30,7 +34,6 @@ PAGES = {
     "About": about_view,
     }
 
-
 def navbar():  
     render_navbar(PAGES)
     PAGES[st.session_state.page]()
@@ -38,7 +41,9 @@ def navbar():
 def sidebar():
     with st.sidebar:
         user = get_user_by_id(st.session_state.user)
-        st.write(f"Name: {user.name}")
+        st.write(f"Name")
+        st.divider()
+        st.write(f"**{user.name}**")
         logout = st.button("Log out", type="primary", width="stretch")
         if logout:
             st.session_state.user = None
