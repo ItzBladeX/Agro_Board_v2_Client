@@ -1,0 +1,4 @@
+# *.db
+# *.bat
+# *.png
+__pycache__
