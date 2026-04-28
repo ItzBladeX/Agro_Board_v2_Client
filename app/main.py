@@ -3,8 +3,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import streamlit as st
 # Components
-from app.components import render_navbar
-from app.services import get_user_by_id
+from app.components import render_navbar, render_profile
+
 # Pages
 
 from app.views import *
@@ -16,7 +16,7 @@ from millify import millify
 from streamlit_javascript import st_javascript
 
 
-st.set_page_config(page_title="AGRO-BOARD", layout="wide", )
+st.set_page_config(page_title="AGRO-BOARD", layout="wide", initial_sidebar_state="collapsed")
 # st.logo("logo.png", size='large')
 
 if "page" not in st.session_state:
@@ -40,14 +40,8 @@ def navbar():
 
 def sidebar():
     with st.sidebar:
-        user = get_user_by_id(st.session_state.user)
-        st.write(f"Name")
-        st.divider()
-        st.write(f"**{user.name}**")
-        logout = st.button("Log out", type="primary", width="stretch")
-        if logout:
-            st.session_state.user = None
-            st.rerun()
+        render_profile()
+        
 
 def main():
     if  st.session_state.user == None:
