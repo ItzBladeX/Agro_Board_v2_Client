@@ -4,6 +4,7 @@ from .profile import render_profile
 from .ui.text import centered_matrix
 from .ui.text import centered_title
 from .auth_user import render_login_form, render_signup_form
+from .settings import render_settings
 
 
 

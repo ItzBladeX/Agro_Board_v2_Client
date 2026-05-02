@@ -14,14 +14,11 @@ def auth_view():
             time.sleep(2)
             st.rerun()
 
-
     if st.session_state.auth_form_mode == "login":
-        
         user = render_login_form()
         login(user)
 
     if st.session_state.auth_form_mode == "signup":
-        
         user = render_signup_form()
         login(user)
 

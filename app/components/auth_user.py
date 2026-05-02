@@ -1,22 +1,19 @@
 import streamlit as st
 from services import create_user, auth_user
 
+def set_mode(mode):
+    st.session_state.auth_form_mode = mode
 
 def mode_buttons(login = "secondary", signup = "secondary"):
+    st.space(size="small")
     leftb, rightb = st.columns(2)
-        
     with leftb: 
         st.button("Log-in", type=login, on_click=set_mode, args=("login",), width="stretch")
     
     with rightb: 
         st.button("Sign-up", type=signup,on_click=set_mode, args=("signup",),width="stretch")
 
-def set_mode(mode):
-    st.session_state.auth_form_mode = mode
-
-def render_signup_form():
-   
-        
+def render_signup_form():  
     left, center, right = st.columns([1,2,1])
 
     with center:
@@ -37,7 +34,7 @@ def render_signup_form():
                     st.info("Non-Mandatory Fields")
                     age = st.number_input(label="Age",value=None, step=1)
                     gender = st.radio(label="Gender", options=[None,"Male", "Female"], horizontal=True, width="stretch")
-                    land_area = st.number_input(label="Land area [Ha]", step=0.1)
+                    land_area = st.number_input(label="Land area [Ha]", step=0.1, value=None)
 
                 submit = st.form_submit_button("Sign-up", key="signup_button", width="stretch", type="primary",  icon=":material/upload:")
             
@@ -45,10 +42,10 @@ def render_signup_form():
                 if not name:
                     st.error("Please Provide your Full Name")
 
-                if not passwd:
-                    st.error("Please provide a password")
+                elif not passwd or len(passwd) < 4:
+                    st.error("Please provide a password greater than 4 characters")
 
-                if passwd != check_passwd:
+                elif passwd != check_passwd:
                     st.error("Password Don't Match")
 
                 elif all([name, passwd, check_passwd]):
@@ -57,15 +54,15 @@ def render_signup_form():
                         passwd = passwd,
                         age = age,
                         gender = gender,
-                        land_area = land_area if land_area > 0 else None)
+                        land_area = land_area)
                     
                     if user:
-                        st.success("Successfully Signed Up")
+                        st.success("Sign-Up Successful")
+                        set_mode("login")
                         return user
 
                     else:
-                        st.error("Something Went Wrong")
-                        return False
+                        st.error("Something Went Wrong!")
 
 
 def render_login_form():
@@ -94,10 +91,10 @@ def render_login_form():
                     user = auth_user(name=name, passwd=passwd)
 
                     if user:
-                        st.success("Successful")
+                        st.success("Login Successful")
+
                         return user
-                    
                     else:
-                        st.error("Invalud Username or Password")
-                        return False
+                        st.error("Invalid Username or Password")
+
 

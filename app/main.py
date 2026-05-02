@@ -3,7 +3,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import streamlit as st
 # Components
-from app.components import render_navbar, render_profile
+from app.components import render_navbar, render_profile, render_settings
+from app.services import get_user
 
 # Pages
 
@@ -17,12 +18,14 @@ from streamlit_javascript import st_javascript
 
 
 st.set_page_config(page_title="AGRO-BOARD", layout="wide", initial_sidebar_state="collapsed")
-# st.logo("logo.png", size='large')
+st.logo("app/assets/logo.png", size='large')
 
 if "page" not in st.session_state:
     st.session_state.page = "Home"
+
 if "window_width" not in st.session_state:
     st.session_state.window_width = st_javascript("window.innerWidth", key="main_width") 
+    
 if "user" not in st.session_state:
     st.session_state.user = None
 
@@ -39,8 +42,18 @@ def navbar():
     PAGES[st.session_state.page]()
 
 def sidebar():
+    user = get_user(st.session_state.user)
     with st.sidebar:
-        render_profile()
+        with st.container(border=True):
+            render_profile(user)
+
+            if st.button("Setting", icon=":material/settings:",width="stretch"):
+                render_settings(user)
+
+        if st.button("Log out", type="primary", width="stretch",  icon=":material/logout:"):
+
+            st.session_state.user = None
+            st.rerun()
         
 
 def main():

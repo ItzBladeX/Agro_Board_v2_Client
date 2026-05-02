@@ -1,7 +1,7 @@
 from app.database import get_session
 from app.models import User
 from sqlmodel import select
-import streamlit as st
+
 
 
 def create_user(name, passwd, age, gender, land_area):
@@ -23,10 +23,33 @@ def create_user(name, passwd, age, gender, land_area):
 
 def auth_user(name, passwd):
     with get_session() as session:
-        statement = select(User).where(User.name == name, User.passwd == passwd)
-        user = session.exec(statement).first()
-        return user
+        try:
+            statement = select(User).where(User.name == name, User.passwd == passwd)
+            user = session.exec(statement).one()
+
+            return user
+        
+        except Exception as e:
+            print(e)
+            session.rollback()
+            return False
     
+def reset_password(id, passwd, new_passwd):
+    with get_session() as session:
+        try:
+            statement = select(User).where(User.id == id, User.passwd == passwd)
+            user = session.exec(statement).one()
+
+            user.passwd = new_passwd
+            session.add(user)
+            session.commit()
+
+            return True
+        
+        except Exception as e:
+            print("Password reset Feild",e)
+            session.rollback()
+            return False
 
 
 
