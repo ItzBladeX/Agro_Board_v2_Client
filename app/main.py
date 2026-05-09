@@ -18,6 +18,15 @@ from streamlit_javascript import st_javascript
 
 
 st.set_page_config(page_title="AGRO-BOARD", layout="wide", initial_sidebar_state="collapsed")
+
+# This markdown is required to disable the "Show password eye" that egde forces on 
+# text input of type=password.
+st.markdown("""
+    <style>
+   input::-ms-reveal, input::-ms-clear { display: none !important; }
+   </style>
+   """, unsafe_allow_html=True)
+
 st.logo("app/assets/logo.png", size='large')
 
 if "page" not in st.session_state:

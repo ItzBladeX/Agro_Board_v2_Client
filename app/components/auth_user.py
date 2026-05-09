@@ -1,39 +1,32 @@
 import streamlit as st
 from services import create_user, auth_user
 
-def set_mode(mode):
-    st.session_state.auth_form_mode = mode
 
-def mode_buttons(login = "secondary", signup = "secondary"):
-    st.space(size="small")
-    leftb, rightb = st.columns(2)
-    with leftb: 
-        st.button("Log-in", type=login, on_click=set_mode, args=("login",), width="stretch")
-    
-    with rightb: 
-        st.button("Sign-up", type=signup,on_click=set_mode, args=("signup",),width="stretch")
+def mode_buttons():
+
+    st.segmented_control("Mode", key="auth_form_mode",options=["Log In", "Sign Up"], default="Log In", selection_mode="single", width="stretch", label_visibility="hidden", required=True)
 
 def render_signup_form():  
     left, center, right = st.columns([1,2,1])
 
     with center:
         with st.container(border=True):
-            mode_buttons(signup="primary")
+            mode_buttons()
 
-            st.title("Sign-up",text_alignment="center")
+            st.title("Sign Up",text_alignment="center")
             st.divider()
 
             with st.form("signup_form"):
                 mandatory, non_mandatory = st.columns(2)
                 with mandatory:
                     st.success("Mandatory Fields")
-                    name = st.text_input(label="Full Name", key="sighup name",  icon="👤")
+                    name = st.text_input(label="Full Name", key="sighup name",  icon=":material/account_circle:")
                     passwd = st.text_input(label="Password", type="password", key="signup_password",  icon=":material/lock:")
                     check_passwd = st.text_input(label="Confirm Password", type="password",  icon=":material/lock:")
                 with non_mandatory:
                     st.info("Non-Mandatory Fields")
                     age = st.number_input(label="Age",value=None, step=1)
-                    gender = st.radio(label="Gender", options=[None,"Male", "Female"], horizontal=True, width="stretch")
+                    gender = st.segmented_control(label="Gender", options=["Male ", "Female"], width="stretch")
                     land_area = st.number_input(label="Land area [Ha]", step=0.1, value=None)
 
                 submit = st.form_submit_button("Sign-up", key="signup_button", width="stretch", type="primary",  icon=":material/upload:")
@@ -57,8 +50,7 @@ def render_signup_form():
                         land_area = land_area)
                     
                     if user:
-                        st.success("Sign-Up Successful")
-                        set_mode("login")
+                        st.success("Sign Up Successful")
                         return user
 
                     else:
@@ -70,13 +62,13 @@ def render_login_form():
     left, center, right = st.columns(3)
     with center:
         with st.container(border=True):
-            mode_buttons(login="primary")
+            mode_buttons()
 
-            st.title("Login",text_alignment="center")
+            st.title("Log In",text_alignment="center")
             st.divider()
 
             with st.form("Login Form"):
-                name = st.text_input(label="Full Name", key="login_name", icon="👤")
+                name = st.text_input(label="Full Name", key="login_name", icon=":material/account_circle:")
                 passwd = st.text_input("Password", type="password", key="login_password",  icon=":material/lock:")
                 login = st.form_submit_button("Login", width="stretch", type="primary", key="login_button",  icon=":material/login:")
         
