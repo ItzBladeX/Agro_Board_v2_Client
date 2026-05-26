@@ -1,15 +1,32 @@
 import streamlit as st
-from components import render_weather_matrix
-from services import get_weather
+from components import render_weather_matrix, render_profile, render_settings
+from services import get_weather, get_user
+from app.constants import STREAMLIT
 
 def home_view():
+    user = get_user(st.session_state.user)
+    with st.sidebar:
+        profile(user)
+        st.link_button("Powered by Streamlit :streamlit:", type="tertiary", width="stretch", url=STREAMLIT)
     with st.container():
-        data = get_weather()    
+        data = get_weather()   
+        st.title("Today's Weather Report",text_alignment="center") 
         render_weather_matrix(data)
         st.divider()
-    
-    
 
+ 
+def profile(user):
+    
+        render_profile(user)
+
+        if st.button("Setting", icon=":material/settings:",width="stretch"):
+            render_settings(user)
+
+        if st.button("Log out", type="primary", width="stretch",  icon=":material/logout:"):
+
+            st.session_state.user = None
+            st.rerun()
+        
    
     # with shelve.open("config") as db:
     #     try:

@@ -12,7 +12,7 @@ def fetch_weather():
         lat, lon = geocoder.ip('me').latlng
         url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true&hourly=precipitation"
         print("Your approximate location (latitude, longitude):", lat, lon)
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
         data = response.json()
         return data
     except Exception as e:

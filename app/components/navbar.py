@@ -14,6 +14,6 @@ def render_navbar(pages):
         orientation="horizontal",
         key = "page",
         styles={"nav-link": 
-                {"text-align": "center", "margin": "0em", "--hover-color": "#676767"},
+                {"text-align": "center", "margin": "0em", "--hover-color": "#C5C5C5"},
             }
         )

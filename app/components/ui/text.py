@@ -11,8 +11,5 @@ def centered_matrix():
     }}
     </style>          
     """, unsafe_allow_html=True)
-def centered_title(text):
-    st.markdown(f"""
-        <h2 style="color:#013014ff; text-align: center; font-family: Arial, sans-serif;"> {text} </h2>
-        """, unsafe_allow_html=True)
+
   

@@ -35,8 +35,8 @@ def auth_user(name, passwd):
             return False
     
 def reset_password(id, passwd, new_passwd):
-    with get_session() as session:
-        try:
+    try:
+        with get_session() as session:
             statement = select(User).where(User.id == id, User.passwd == passwd)
             user = session.exec(statement).one()
 
@@ -44,12 +44,11 @@ def reset_password(id, passwd, new_passwd):
             session.add(user)
             session.commit()
 
-            return True
+            return {"status": True, "error_code": None, "data": None}
         
-        except Exception as e:
-            print("Password reset Feild",e)
-            session.rollback()
-            return False
+    except Exception as e:
+    
+        return {"status": False, "error_code": None, "data": None}
 
 
 

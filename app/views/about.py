@@ -46,4 +46,4 @@ def about_view():
             
     💬 Inspirational / Call to Action
 
-    Empower your farm with smarter insights — get ready with Agro-Board today on GitHub: https://github.com/itz-BladeX/Agro_Board""")
+    Empower your farm with smarter insights — get ready with Agro-Board today on GitHub: https://github.com/ItzBladeX/Agro_Board_v2_Client""")

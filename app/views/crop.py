@@ -1,11 +1,137 @@
 import streamlit as st
-import shelve
-import pandas as pd
-# import client_app.app.functions as func
-import time
-from streamlit_javascript import st_javascript
+from app.services import get_crop, get_crop_types, filter_crop
+from app.components import render_crop_table, render_crop_form, render_crop_filter, render_crop_graph_card, render_crop_profit_trend
+from app.constants import STREAMLIT
+
 def crop_view():
-    pass
+    mode = load_nav() # return selected nav option
+    crop_types = load_crop_types() # return dict of crop types : growth rate
+
+    crops = load_sidebar(crop_types) # return filtered crop from sidebar filter
+
+    load_crop_form(crop_types) # responsable for add crop form and edit crop form based on session state
+    if not crops:
+        st.error("No Crops")
+        return
+    
+    if mode == "Table":
+        render_crop_table(crops)
+        
+    elif mode == "Graph":
+        load_crop_graph_card(crops)
+    
+    elif mode == "Trend":
+        load_crop_profit_trend() # No parameters since trend is unaffected by filter. it gets its own crops from
+
+
+def load_nav():
+    return st.segmented_control(" ", options=["Table", "Graph", "Trend"], default="Table", width="stretch", selection_mode="single", required=True)
+
+def load_sidebar(crop_types):
+    with st.sidebar:
+        filtered_crops = load_crop_filter(crop_types)
+        st.link_button("Powered by Streamlit :streamlit:", type="tertiary", width="stretch", url=STREAMLIT)
+        return filtered_crops
+    
+def load_crop_types():
+    crop_type_response = get_crop_types()
+    if crop_type_response["status"]: 
+        return crop_type_response["data"]
+    else:
+        st.error("Unable to get crop types")
+        print(crop_type_response["error_code"])
+
+def load_crop_graph_card(crops):
+    col = st.columns(4)
+    curr_col = 0
+    for crop in crops:
+        with col[curr_col]:
+            render_crop_graph_card(crop)
+            if curr_col < 3 : curr_col += 1
+            else: curr_col = 0
+def load_crop_profit_trend():
+    with st.container(border=True):
+        st.title("Profit Trend", text_alignment="center")
+        st.divider()
+        # Retrieve crops independent of Filter. Filter doesnt affect Trends
+        crops = filter_crop(st.session_state.user, sort="Production Year")
+        render_crop_profit_trend(crops["data"], show_table=True)
+
+def load_crop_filter(crop_types):
+    
+    st.title("Crop Filter", text_alignment="center")
+    st.divider()
+
+    filter_response = render_crop_filter(crop_types)
+
+    if filter_response["error_code"]:
+        print("Filter Error [Component]: ", filter_response["error_code"], filter_response["status"]) 
+        return None
+    
+    elif filter_response["status"]:
+
+        if filter_response["data"]:
+            st.success("Filter: ON")
+            filtered_crop = filter_crop(st.session_state.user, *filter_response["data"])
+
+        else:
+            st.error("Filter: OFF")
+            filtered_crop = filter_crop(st.session_state.user, sort="Production Year")
+
+        if not filtered_crop["status"]:
+            st.error("Filter Unavailable")
+            print("Filter Error [Service]", filtered_crop["error_code"])
+            return None
+    
+        return filtered_crop["data"] 
+    
+    # if filter_response["status"] and filter_response["data"]:
+
+    #     filtered_crop = filter_crop(st.session_state.user, *filter_response["data"])
+
+    #     if filtered_crop["status"]:
+    #         st.success("Filter: ON")
+
+    #         return filtered_crop["data"]
+        
+    #     else:
+    #         print("Filter Error [Service]", filtered_crop["error_code"])
+    #         st.error("Unable to Load Filter")
+    #         return None
+        
+    # else:  
+    #     st.error("Filter: OFF")    
+    #     get_crop_response = get_crop(st.session_state.user)
+    #     if get_crop_response["status"]:
+
+    #         return get_crop_response["data"]
+        
+    #     else:
+    #         print(" Get Crop Error [Service]",get_crop_response["error_code"])
+    #         st.error("Unable To Load Crop Table")
+    #         return None
+    
+def load_crop_form(crop_type_dict):
+    if "crop_menu" not in st.session_state: 
+        st.session_state.crop_menu = False
+ 
+    if st.session_state.get("crop_form", False):
+        render_crop_form(crop_type_dict)
+
+    elif st.session_state.get("crop_menu", False):
+        render_crop_form(crop_types_dict=crop_type_dict, edit_crop = st.session_state.edit_crop, menu=True)
+        
+def load_crop_table(filtered_crops):
+    
+    render_crop_table(filtered_crops)
+    
+    
+
+
+
+
+
+
     # st.set_page_config(layout="wide")
     # st.logo("logo.png", size='large')
     # database = "crop_database"

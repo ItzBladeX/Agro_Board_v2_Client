@@ -1,5 +1,6 @@
 import streamlit as st
 from services import create_user, auth_user
+from app.constants import GENDER_OPTIONS, AGE_LIMIT, STREAMLIT
 
 
 def mode_buttons():
@@ -25,11 +26,11 @@ def render_signup_form():
                     check_passwd = st.text_input(label="Confirm Password", type="password",  icon=":material/lock:")
                 with non_mandatory:
                     st.info("Non-Mandatory Fields")
-                    age = st.number_input(label="Age",value=None, step=1)
-                    gender = st.segmented_control(label="Gender", options=["Male ", "Female"], width="stretch")
+                    age = st.number_input(label="Age",value=None, step=1, min_value=AGE_LIMIT[0], max_value=AGE_LIMIT[1])
+                    gender = st.segmented_control(label="Gender", options=GENDER_OPTIONS, width="stretch")
                     land_area = st.number_input(label="Land area [Ha]", step=0.1, value=None)
 
-                submit = st.form_submit_button("Sign-up", key="signup_button", width="stretch", type="primary",  icon=":material/upload:")
+                submit = st.form_submit_button("Sign-up", key = "signup_button", width = "stretch", type = "primary",  icon = ":material/upload:")
             
             if submit:
                 if not name:
@@ -55,6 +56,8 @@ def render_signup_form():
 
                     else:
                         st.error("Something Went Wrong!")
+            
+            st.link_button("Powered by Streamlit :streamlit:", type="tertiary", width="stretch", url=STREAMLIT)
 
 
 def render_login_form():
@@ -88,5 +91,6 @@ def render_login_form():
                         return user
                     else:
                         st.error("Invalid Username or Password")
+            st.link_button("Powered by Streamlit :streamlit:", type="tertiary", width="stretch", url=STREAMLIT)
 
 

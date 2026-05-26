@@ -1,7 +1,7 @@
 import streamlit as st
 import time
-from app.services import update_user, link_to_server, reset_password, delete_user
-
+from app.services import update_user, link_to_server, reset_password, del_user, drop_crops
+from app.constants import GENDER_OPTIONS
 
 @st.dialog("Settings", width="medium")
 def render_settings(user):
@@ -14,12 +14,12 @@ def render_settings(user):
         with st.expander("Reset Password", icon=":material/change_circle:"):
             reset_passwd(user)
         with st.expander("Account Deletion", icon=":material/delete_forever:"):
-            del_user(user)
+            delete_user(user)
 
     with st.expander("Server Setting", icon=":material/storage:"):
         server_settings(user)
     
-    if st.button("Close", type="secondary",width="stretch" , icon=":material/close:"):
+    if st.button("Close", type="secondary", width="stretch" , icon=":material/close:"):
         st.rerun()
 
 def user_setting(user):
@@ -30,14 +30,15 @@ def user_setting(user):
         new_age = st.number_input("Age [Optional]", value = user.age, step=1)
     with col2:
         new_land_area = st.number_input("Land Area [Optional] [Ha]", value=user.land_area, step=0.1)
-        new_gender = st.segmented_control("Gender [Optional]",options=["Male", "Female"], default=user.gender,selection_mode="single", width="stretch") 
+        new_gender = st.segmented_control("Gender [Optional]",options=GENDER_OPTIONS, default=user.gender,selection_mode="single", width="stretch") 
     if st.button("Save", type="primary", width="stretch", icon=":material/save:"):
 
         if not new_name:
             st.error("Name can't be empty")
 
         else:
-            status = update_user(
+            
+            response = update_user(
                 id=user.id,
                 name=new_name, 
                 age=new_age,
@@ -45,12 +46,13 @@ def user_setting(user):
                 land_area=new_land_area,
                 )
             
-            if status:
+            if response["status"]:
                 st.success("Successfully Saved")
                 time.sleep(2)
 
             else:
                 st.error("Something Went Wrong")
+                print(response["error_code"])
 
 def reset_passwd(user):
     st.subheader("Reset Password", text_alignment = "center")
@@ -72,13 +74,14 @@ def reset_passwd(user):
             st.error("New password cant be the same as previous")
 
         else:
-            status = reset_password(user.id,passwd, new_passwd)
-            if status:
+            response = reset_password(user.id,passwd, new_passwd)
+            if response["status"]:
                 st.success("Password Reset Successful")
             else:
                 st.error("Something Went Wrong!")
+                print(response["error_code"])
 
-def del_user(user):
+def delete_user(user):
     st.subheader("Delete Account", text_alignment="center")
     col1, col2 = st.columns(2)
     with col1:
@@ -91,15 +94,19 @@ def del_user(user):
 
     if all([passwd, confirm_passwd, confirm1, confirm1, confirm3]) and passwd == confirm_passwd:
         if st.button("Delete", width="stretch", icon=":material/delete_forever:"):
-            if passwd != user.passwd :
+            if passwd != user.passwd or confirm_passwd != user.passwd:
                 st.error("Incorrect Password!")
             else:
-                status = delete_user(user.id, passwd, confirm_passwd)
-                if status:
-                    st.success("Account deleted Successfully !")
-                    time.sleep(3)
+                response2 = drop_crops(user.id)
+                response = del_user(user.id, passwd)
+                if response["status"] and response2["status"]:
+                    st.success("Account Deleted Successfully !")
+                    time.sleep(1)
                     st.session_state.user = None
                     st.rerun()
+                else:
+                    print(response["error_code"])
+                    print(response2["error_code"])
 
 def server_settings(user):
     st.subheader("Server Settings", text_alignment = "center")

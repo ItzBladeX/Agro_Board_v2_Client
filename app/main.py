@@ -38,6 +38,7 @@ if "window_width" not in st.session_state:
 if "user" not in st.session_state:
     st.session_state.user = None
 
+
 PAGES = {
     "Home": home_view,
     "Crop": crop_view,
@@ -49,28 +50,12 @@ PAGES = {
 def navbar():  
     render_navbar(PAGES)
     PAGES[st.session_state.page]()
-
-def sidebar():
-    user = get_user(st.session_state.user)
-    with st.sidebar:
-        with st.container(border=True):
-            render_profile(user)
-
-            if st.button("Setting", icon=":material/settings:",width="stretch"):
-                render_settings(user)
-
-        if st.button("Log out", type="primary", width="stretch",  icon=":material/logout:"):
-
-            st.session_state.user = None
-            st.rerun()
         
 
 def main():
     if  st.session_state.user == None:
         auth_view()
-    # session_states()
     else:
-        sidebar()
         navbar()
 
 main()

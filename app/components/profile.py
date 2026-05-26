@@ -1,14 +1,16 @@
 import streamlit as st
+from app.constants import GENDER_OPTIONS
 
-
-#TODO: Make setting is own component
 def render_profile(user): 
     st.title(f"👤 Profile [{user.id}]", text_alignment="center")
     st.divider()
 
-    st.write(f"**Name**: {user.name}")
-    st.write(f"**Age:** {"  --  " if not user.age else user.age}")
-    st.write(f"**Gender:** { "--" if not user.gender else user.gender}") 
-    st.write(f"**Land Area:** {"  --  " if not user.land_area else f"{user.land_area} Ha"}" )
+    st.text_input("**Name**", value=user.name, disabled=True)
+    st.text_input("**Age:**", value= user.age, disabled=True)
+    # st.text_input("**Gender:**", value=user.gender, disabled=True)
+    st.segmented_control("Gender [Optional]",options=GENDER_OPTIONS, default=user.gender,selection_mode="single", width="stretch", disabled=True)
+    st.text_input("**Land Area:**", value=user.land_area, disabled=True)
+
+
     
 
