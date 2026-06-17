@@ -22,7 +22,7 @@ def create_crop(crop):
     except Exception as e:
         return {"status":False, "error_code": e, "data": None}
 
-@st.cache_data
+
 def get_crop(user_id, crop_id=None):
 
     try:
@@ -40,7 +40,7 @@ def get_crop(user_id, crop_id=None):
     except Exception as e:
             return {"status": False, "error_code": e, "data": None}
 
-@st.cache_data()     
+    
 def get_crop_types():
     try:
         with get_session() as session:
@@ -96,7 +96,7 @@ def drop_crops(user_id):
         return {"status": False, "error_code": e, "data":None}
 
 
-@st.cache_data
+
 def filter_crop(user_id, name = None, prod_year_list = None, prod_year_range = None, yields = None, profits = None, sort = "Production Year"):
     try:
         conditions = [Crop.user_id == user_id] 

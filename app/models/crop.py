@@ -14,7 +14,7 @@ class Crop(SQLModel, table = True):
     harvest_date: date | None
     crop_yield: float | None 
     prod_cost: float | None
-    sell_price: float | None
+    revenue: float | None
     profit: float | None
     notes: str | None
 
