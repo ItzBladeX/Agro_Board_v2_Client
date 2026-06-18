@@ -2,7 +2,8 @@ import streamlit as st
 from constants import TABLE_MENU_OPTIONS, YEAR_LIST
 import time
 from app.services import del_crop, update_crop, create_crop
-from app.models import Crop
+from app.services import del_livestock, update_livestock, create_livestock
+from app.models import Crop, Livestock
 
 # def menu(edit_item,{form_name} data_types_dict):
 #     st.session_state.table_menu = False
@@ -171,7 +172,7 @@ from app.models import Crop
 
 
 @st.dialog("Crop Form", width = "large")
-def render_form(data_types_dict, form_type, edit_item = None, menu = False, view_mode = False):
+def render_table_form(data_types_dict, form_type, edit_item = None, menu = False, view_mode = False):
     form_name = form_type.title()
     if menu:
         st.session_state.table_menu = False
@@ -190,9 +191,9 @@ def render_form(data_types_dict, form_type, edit_item = None, menu = False, view
             edit_crop_yield = edit_item.crop_yield
         elif form_type == "livestock":
             pass
-            edit_planted_date = edit_item.planted_date
-            edit_harvest_date = edit_item.harvest_date
-            edit_crop_yield = edit_item.crop_yield
+            edit_entry_date = edit_item.entry_date
+            edit_exit_date = edit_item.exit_date
+            edit_amount = edit_item.amount
 
         edit_prod_cost = edit_item.prod_cost
         edit_revenue = edit_item.revenue
@@ -200,7 +201,7 @@ def render_form(data_types_dict, form_type, edit_item = None, menu = False, view
 
     else:
         st.title(f"Add {form_name}", text_alignment="center")
-        edit_id = edit_name = edit_prod_year = edit_planted_date = edit_harvest_date = edit_crop_yield = edit_prod_cost = edit_revenue = edit_notes = None
+        edit_id = edit_name = edit_prod_year = edit_entry_date = edit_exit_date = edit_amount = edit_planted_date = edit_harvest_date = edit_crop_yield = edit_prod_cost = edit_revenue = edit_notes = None
 
         edit_user_id = st.session_state.user
     
@@ -235,7 +236,9 @@ def render_form(data_types_dict, form_type, edit_item = None, menu = False, view
                         planted_date = st.date_input("Planted Date",value=edit_planted_date,help="if helf empty, will fill with current date",disabled=view_mode )
                         harvest_date = st.date_input("Harvest Date", value = edit_harvest_date,disabled=view_mode)
                     elif form_type == "livestock":
-                        pass
+                        entry_date = st.date_input("Entry [Bought] Date",value=edit_entry_date,help="if helf empty, will fill with current date",disabled=view_mode )
+                        exit_date = st.date_input("Exit [Sold] Date", value = edit_exit_date,disabled=view_mode)
+                        
 
             with eco:
                 with st.container(border=True):
@@ -244,10 +247,10 @@ def render_form(data_types_dict, form_type, edit_item = None, menu = False, view
                     with l:
                         if form_type== "crop":
                             crop_yield = st.number_input("Crop Yield ", value =edit_crop_yield,step=0.1, min_value=0.0, disabled=view_mode)
-                            prod_cost = st.number_input("Production Cost", value=edit_prod_cost,step=0.1, min_value=0.0, disabled=view_mode)
                         elif form_type == "livestock":
-                            pass
-                        
+                            amount = st.number_input("Livestock Amount", value =edit_amount,step=1, min_value=0, disabled=view_mode)
+                        prod_cost = st.number_input("Production Cost", value=edit_prod_cost,step=0.1, min_value=0.0, disabled=view_mode)
+                           
                     with r:
                         revenue =  st.number_input("Revenue", value=edit_revenue, step=0.1, min_value=0.0, disabled=view_mode)
                         p = revenue-prod_cost if revenue and prod_cost else None
@@ -273,7 +276,7 @@ def render_form(data_types_dict, form_type, edit_item = None, menu = False, view
                     if form_type == "crop":
                         response = del_crop(edit_item.id, edit_item.user_id)
                     if form_type == "livestock":
-                        pass
+                        response = del_livestock(edit_item.id, edit_item.user_id)
                     if response["status"]:
                         st.success("Successfully Deleted")
                         time.sleep(1)
@@ -312,9 +315,26 @@ def render_form(data_types_dict, form_type, edit_item = None, menu = False, view
                 )
                 if menu: response = update_crop(data)
                 else: response = create_crop(data)
+            if form_type == "livestock":
 
-            elif form_type == "livestock":
-                pass
+                data = Livestock(
+                    id = edit_id,
+                    user_id = edit_user_id,
+                    name = name,
+                    livestock_type_id= data_types_dict[name],
+                    prod_start_year = prod_start_year,
+                    prod_end_year = prod_end_year,
+                    entry_date =entry_date,
+                    exit_date = exit_date,
+                    amount = amount,
+                    prod_cost = prod_cost,
+                    revenue = revenue,
+                    profit = profit,
+                    notes = notes
+                )
+                if menu: response = update_livestock(data)
+                else: response = create_livestock(data)
+                
 
             if not response["status"]:
                 print(response["error_code"])

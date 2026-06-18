@@ -1,104 +1,113 @@
 import streamlit as st
-import shelve
-import pandas as pd
-# import client_app.app.functions as func
-from streamlit_javascript import st_javascript
-import time
+from app.services import filter_data, get_livestock_types
+from app.components import render_table, render_table_form, render_filter, render_profit_trend, render_amount_trend, render_cost_revenue_trend, render_graph_card
+from app.constants import STREAMLIT
+from app.models import Livestock
+
 def livestock_view():
-    pass
-    # database = "livestock_database"
-    # st.set_page_config(layout="wide")
-    # st.logo("logo.png", size='large')
-
-
-    # Width = st_javascript("window.innerWidth", key="livestock_width")
-    # func.render_nav("Livestock Data", Width)
-    # time.sleep(0.5)
-
-
-    # if "adl" not in st.session_state:
-    #     st.session_state.adl = False
-
-
-
-
-    # st.markdown("""<style> button { height: 56px !important; padding-bottom:5px !important; } </style>""", unsafe_allow_html=True)
-
-
-    # if "big" not in st.session_state:
-    #     st.session_state.big = False
-    # # Toggle for custom made table of built in st.framework()
-    # bcol1, bcol2 = st.columns(2)
-
-
     
+    mode = load_nav() # return selected nav option
+    livestock_types = load_livestock_types() # return dict of livestock types : growth rate
 
+    livestock = load_sidebar(livestock_types, mode) # return filtered livestock from sidebar filter_data [Mode used to disable/enable parts of the filter_data according to content displayed]
+  
+    if mode == "Table":
+        render_table(livestock, table_type="livestock")
+        load_form(livestock_types) # responsable for add livestock form and edit livestock form based on session state
+        
+    elif mode == "Graph":
+        load_graph_card(livestock)
+    
+    elif mode == "Trend":
+        load_profit_trend(livestock)
+        load_cost_revenue_trend(livestock)
+        load_amount_trend(livestock) 
 
-    # if st.button("Change Table", width="stretch", icon=":material/fullscreen:"):
-    #     st.session_state.big = not st.session_state.big
+def load_nav():
+    return st.segmented_control("Livestock Nav Bar", options=["Table", "Graph", "Trend"], default="Table", width="stretch", selection_mode="single", required=True, label_visibility="hidden")
 
-    # if st.session_state.big:
-    #     # info1, info2 = st.columns([0.84,1])
-    #     # with info1:
-    #     #     st.button("Progress", width="stretch")
-    #     # with info2:
-    #     #     st.button("Economics [ETB]", width="stretch")
+def load_sidebar(crop_types, mode):
+    with st.sidebar:
+        filtered_crops = load_filter(crop_types, mode) # Mode to disaple/enable form parts
+        st.link_button("Powered by Streamlit :streamlit:", type="tertiary", width="stretch", url=STREAMLIT)
+        return filtered_crops
+    
+def load_livestock_types():
+    crop_type_response = get_livestock_types()
+    if crop_type_response["status"]: 
+        return crop_type_response["data"]
+    else:
+        st.error("Unable to get livestock types")
+        print(crop_type_response["error_code"])
 
-    #     with shelve.open(database) as db:
-    #         col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns([3,2,3,3,3,3,2.5,2.5,1,1])
-    #         with col1: st.button("Livestock Type", width="stretch")
-    #         with col2: st.button("Amount", width="stretch")
-    #         with col3: st.button("Purchase Date", width="stretch")
-    #         with col4: st.button("Selling Date", width="stretch")
-    #         with col5: st.button("Purchase Cost", width="stretch")
-    #         with col6: st.button("Production Cost", width="stretch")
-    #         with col7: st.button("Sold Price", width="stretch")
-    #         with col8: st.button ("Profit", width="stretch")
-    #         with col9: st.button("", icon=":material/add:",width="stretch", on_click=func.add_data, args=(database,"livestock"))
-    #         with col10: st.button("",icon=":material/autorenew:", width="stretch",on_click=st.rerun)
-    #         years = [key for key in db]
-    #         year_list = func.sort_years(list(set(years)))
-    #         for yr in year_list:
-    #             st.button (yr, width="stretch")
-    #             for selected_year in db:  # Loop over the db keys and display results
-    #                 if selected_year == yr:
-    #                     year_data = db[selected_year]
-    #                     for livestock_type in year_data:
-    #                         col1, col2, col3, col4, col5, col6, col7, col8, col9, col10 = st.columns([3,2,3,3,3,3,2.5,2.5,1,1])
-    #                         livestock = year_data[livestock_type]
-    #                         with col1: st.info(livestock.type)
-    #                         with col2: st.info(livestock.amount)
-    #                         with col3: st.info(livestock.date)
-    #                         with col4: st.info(livestock.export_date)
-    #                         with col5: st.info(func.format_number(livestock.import_cost))
-    #                         with col6: st.info(func.format_number(livestock.production_cost))
-    #                         with col7: st.info(func.format_number(livestock.export_cost))
-    #                         with col8: st.info(func.format_number(livestock.profit))
-    #                         with col9: st.button(icon=":material/edit:", label="", key=f"edit{yr}{livestock_type}", on_click=func.edit, args=(database,None, yr,livestock_type ), type="secondary", help="Edit Data", width="stretch")
-    #                         with col10: st.button(icon=":material/delete:",label="", key=f"del{yr}{livestock_type}", on_click=func.delete, args=(database,yr, livestock_type), type="primary", help="Delete Data Permanently", width="stretch")
+def load_graph_card(livestocks):
+    col = st.columns(4)
+    curr_col = 0
+    if not livestocks:
+        st.error("No Livestock To Display")
+    for livestock in livestocks:
+        with col[curr_col]:
+            render_graph_card(livestock, graph_type="livestock")
+            if curr_col < 3 : curr_col += 1
+            else: curr_col = 0
+def load_profit_trend(crops):
+    
+    with st.container(border=True):
+        st.title("Profit Trend", text_alignment="center")
+        st.divider()        
+        render_profit_trend(crops, show_table=True, trend_type="livestock")
 
+def load_amount_trend(crops):   
+    with st.container(border=True):
+        st.title("Yield Trend", text_alignment="center")
+        st.divider()
+        render_amount_trend(crops, show_table = True)
+      
+def load_cost_revenue_trend(crops):
+    with st.container(border=True):
+        st.title("Cost vs Revenue", text_alignment="center")
+        st.divider()
+        render_cost_revenue_trend(crops, show_table = True, trend_type="livestock")
 
-    # else:  # DataFrame for small table id toggle not toggled
-    #     with shelve.open(database) as db:
-    #         data = {}
-    #         for year, livestock_dict in db.items():
-    #             for livestock_type, livestock_data in livestock_dict.items():
-    #                 data[year , livestock_type] = vars(livestock_data)
-    #         data = pd.DataFrame.from_dict(data, orient="index")
-    #         if "production_year" in data.columns and "type" in data.columns:
-    #             data = data.drop(columns=["production_year", "type"])
-    #         try:data.index.names = ["Production year", "Type"]
-    #         except:data.index.name = "Production year"
-    #         data = data.rename(columns={
-    #             "date": "Purchase Date",
-    #             "export_date": "Sold Date",
-    #             "amount": "Amount",
-    #             "import_cost": "Purchase Cost",
-    #             "export_cost": "Sold Price",
-    #             "production_cost" : "Prod. Cost",
-    #             "profit" : "Profit"
-    #         })
-    #         st.dataframe(data, width="stretch")
+def load_filter(crop_types, mode):
+    
+    st.title("Livestock Filter", text_alignment="center")
+    st.divider()
 
+    # mode used to disable/enable filter_data fields
+    # filter_type to identify what data to filter_data livestock/livestock...
+    filter_response = render_filter(crop_types, filter_type="livestock", mode=mode) 
+    if filter_response["error_code"]:
+        print("Filter Error [Component]: ", filter_response["error_code"], filter_response["status"]) 
+        return None
+    
+    elif filter_response["status"]:
 
+        if filter_response["data"]:
+            st.success("Filter: ON")
+            filtered_crop = filter_data(Livestock, st.session_state.user, *filter_response["data"])
 
+        else:
+            st.error("Filter: OFF")
+            filtered_crop = filter_data(Livestock, st.session_state.user, sort="Production Year")
+
+        if not filtered_crop["status"]:
+            st.error("Filter Unavailable")
+            print("Filter Error [Service]", filtered_crop["error_code"])
+            return None
+    
+        return filtered_crop["data"] 
+    
+def load_form(crop_type_dict):
+    if "table_menu" not in st.session_state: 
+        st.session_state.table_menu = False
+ 
+    if st.session_state.get("livestock_form", False):
+        render_table_form(crop_type_dict, menu = False, form_type="livestock")
+
+    elif st.session_state.get("table_menu", False):
+        render_table_form(crop_type_dict, edit_item = st.session_state.edit_item, menu=True, form_type="livestock")
+        
+def load_table(filtered_crops):
+    render_table(filtered_crops, table_type="livestock")
+    

@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Session, create_engine
-from app.models import User, Crop
+from app.models import User, Crop, Livestock
 
 sqlite_file_name = "agro_board.db"  
 sqlite_url = f"sqlite:///{sqlite_file_name}"  

@@ -1,7 +1,7 @@
 import subprocess
 import webview
 import time
-import sys
+
 
 import ctypes
 user32 = ctypes.windll.user32

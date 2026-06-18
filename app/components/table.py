@@ -40,10 +40,10 @@ def rows(item, no, row_type):
     elif row_type == "livestock":
     
         with col[1]: st.info(item.name, width="stretch")
-        with col[2]: st.info(formatted(item.crop_yield, is_yield=True))
-        with col[3]: st.info(formatted(item.harvest_date)) 
+        with col[2]: st.info(formatted(item.amount))
+        with col[3]: st.info(formatted(item.entry_date)) 
         with col[4]: st.error(formatted(item.prod_cost, is_currency=True))
-        with col[6]: st.info(formatted(item.revenue, is_currency=True))
+        with col[5]: st.info(formatted(item.revenue, is_currency=True))
 
     with col[6]: 
         if item.profit and item.profit >=0: st.success(formatted(item.profit, is_currency=True))
@@ -57,12 +57,14 @@ def rows(item, no, row_type):
 
 
 def render_table(data, table_type):
-        if not data:
-            st.error("No Data to Display")
-            return
-        set_button_size("crop_table", 56)
-        with st.container(key="crop_table"):
+        table_name = table_type.title()
+        set_button_size(f"{table_name}_table", 56)
+        with st.container(key=f"{table_name}_table"):
             cols(table_type)
+            if not data:
+                st.error(f"No {table_name} to Display")
+                return
+
             no = 1
             current_year = None
             for item in data:
